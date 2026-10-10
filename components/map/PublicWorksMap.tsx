@@ -289,8 +289,8 @@ function ChoicePopup({
     <Popup minWidth={230} closeButton>
       <div className="space-y-2">
         <div>
-          <p className="text-sm font-bold">{title}</p>
-          <p className="text-xs text-slate-500">{subtitle}</p>
+          <div className="text-sm font-bold">{title}</div>
+          <div className="text-xs text-slate-500">{subtitle}</div>
         </div>
         <button
           className={`${btn} bg-emerald-700 text-white hover:bg-emerald-800`}
@@ -311,7 +311,7 @@ function ChoicePopup({
         >
           Verification
         </button>
-        {verifyNote && <p className="text-xs text-slate-500">{verifyNote}</p>}
+        {verifyNote && <div className="text-xs text-slate-500">{verifyNote}</div>}
       </div>
     </Popup>
   );
@@ -352,7 +352,11 @@ function MapGestures({
       setPending(null);
       if (userLocation) {
         const here: LatLngTuple = [userLocation.lat, userLocation.lng];
-        if (!map.getBounds().contains(here)) {
+        // "Nowhere near" the user: zoomed far out (e.g. the whole world is in view,
+        // so the user's dot is technically on screen) or the map centre is >15 km away.
+        const farAway =
+          map.getZoom() < 10 || map.distance(map.getCenter(), here) > 15_000;
+        if (farAway) {
           map.flyTo(here, Math.max(map.getZoom(), 14));
           return;
         }
@@ -371,15 +375,16 @@ function MapGestures({
   if (!pending) return null;
   return (
     <Popup
+      key={`${pending.lat}-${pending.lng}`}
       position={[pending.lat, pending.lng]}
       eventHandlers={{ remove: () => setPending(null) }}
       minWidth={220}
     >
       <div className="space-y-2">
-        <p className="text-sm font-bold">Report an issue here?</p>
-        <p className="text-xs text-slate-500">
+        <div className="text-sm font-bold">Report an issue here?</div>
+        <div className="text-xs text-slate-500">
           {pending.lat.toFixed(5)}, {pending.lng.toFixed(5)}
-        </p>
+        </div>
         <div className="flex gap-2">
           <button
             className="flex-1 rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
