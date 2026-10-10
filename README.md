@@ -11,7 +11,7 @@ CivicSync addresses these challenges by bringing project information, citizen fe
 
 ## Video
 
-
+https://drive.google.com/drive/folders/1YeAJCUOmSVNbsE-G4WbIe5_DQpSmC1Bt?usp=sharing
 
 ## Features
 
