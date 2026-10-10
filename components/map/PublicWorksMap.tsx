@@ -68,11 +68,14 @@ export default function PublicWorksMap({
   onEmptyPlaceChosen: (at: LatLng) => void;
 }) {
   const now = useNow();
-  const byProject = useMemo(() => reportsByProject(reports), [reports]);
+ const byProject = useMemo(
+  () => reportsByProject(reports ?? []),
+  [reports]
+);
 
-  const mappedComplaints = complaints.filter(
-    (c) => c.latitude != null && c.longitude != null
-  );
+const mappedComplaints = (complaints ?? []).filter(
+  (c) => c != null && c.latitude != null && c.longitude != null
+);
 
   const allPoints: LatLngTuple[] = useMemo(
     () => [

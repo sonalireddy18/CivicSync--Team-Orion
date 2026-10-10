@@ -166,7 +166,20 @@ export default function ComplaintModal({
       gmailTab.location.href = gmailUrl;
     }
     setSent({ saved: res.saved, gmailUrl });
-    onSubmitted?.(res.complaint);
+    const complaint: ComplaintRecord = {
+  id: Date.now(),
+  complaint_type: payload.category,
+  department_id: selectedDept.id,
+  department: selectedDept.name,
+  street: payload.street,
+  description: payload.description,
+  latitude: payload.latitude ?? null,
+  longitude: payload.longitude ?? null,
+  complaint_status: "Pending",
+  created_at: new Date().toISOString(),
+};
+
+onSubmitted?.(complaint);
   }
 
   function close() {

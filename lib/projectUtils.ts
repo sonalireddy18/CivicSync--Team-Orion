@@ -56,15 +56,18 @@ export function distanceKm(
 
 /** Groups reports by project id. */
 export function reportsByProject(
-  reports: CitizenReport[]
+  reports: CitizenReport[] = []
 ): Map<number, CitizenReport[]> {
   const map = new Map<number, CitizenReport[]>();
-  for (const r of reports) {
+
+  for (const r of reports ?? []) {
     if (r.project_id == null) continue;
+
     const list = map.get(r.project_id) ?? [];
     list.push(r);
     map.set(r.project_id, list);
   }
+
   return map;
 }
 

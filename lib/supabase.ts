@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-/**
+/*
  * The Supabase client wants only the project address, e.g.
  * https://abcdxyz.supabase.co  (no /rest/v1, no trailing slash).
  * Keeping just the origin makes a slightly wrong value still work.
