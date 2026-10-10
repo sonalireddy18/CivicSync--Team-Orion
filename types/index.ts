@@ -3,7 +3,8 @@ export type ProjectStatus = "Planned" | "In Progress" | "Delayed";
 export interface Project {
   id: number;
   title: string;
-  department: string;
+  department_id: number | null;
+  department: string; // department name, joined from the department table
   street: string;
   status: ProjectStatus;
   status_color: string;
@@ -15,35 +16,36 @@ export interface Project {
   detour: string | null;
   latitude: number;
   longitude: number;
+  verified_stalls: number;
 }
 
 export interface CitizenReport {
   id: number;
-  project_id: number;
+  project_id: number | null;
   image_url: string | null;
-  ai_status_tag: string | null;
+  ai_status_tag: string;
   notes: string | null;
-  upvotes: number;
+  upvotes: number | null;
   created_at: string;
-  // Placeholder until a conversations table exists. null = no conversation yet.
-  conversation_id: number | null;
+  // No conversations table yet, so this is normally undefined.
+  conversation_id?: number | null;
 }
 
 export interface Department {
   id: number;
   name: string;
   contact_email: string;
+  dept_category: string;
 }
 
 export type VerificationType = "Aadhaar" | "PAN Card" | "Drivers License";
 
+// Must match the citizen_complaints_category_check constraint
 export type ComplaintCategory =
-  | "Road / Pothole"
-  | "Water / Pipeline"
+  | "Road / Drainage"
+  | "Pipes"
   | "Electricity"
-  | "Drainage"
-  | "Blocked Road"
-  | "Other";
+  | "Network Towers";
 
 export interface ComplaintInput {
   citizen_name: string;
@@ -51,5 +53,5 @@ export interface ComplaintInput {
   category: ComplaintCategory;
   street: string;
   description: string;
-  department: string;
+  department: string; // department name, used in the email
 }

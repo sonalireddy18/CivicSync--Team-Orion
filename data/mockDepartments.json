@@ -1,6 +1,6 @@
 [
-  { "id": 1, "name": "Public Works Department", "contact_email": "pwd@example.gov.in" },
-  { "id": 2, "name": "Municipal Drainage Board", "contact_email": "drainage@example.gov.in" },
-  { "id": 3, "name": "Water Supply & Drainage Board", "contact_email": "water@example.gov.in" },
-  { "id": 4, "name": "Electricity Board", "contact_email": "electricity@example.gov.in" }
+  { "id": 1, "name": "Public Works Department", "contact_email": "pwd@example.gov.in", "dept_category": "Road / Drainage" },
+  { "id": 2, "name": "Municipal Drainage Board", "contact_email": "drainage@example.gov.in", "dept_category": "Road / Drainage" },
+  { "id": 3, "name": "Water Supply & Drainage Board", "contact_email": "water@example.gov.in", "dept_category": "Pipes" },
+  { "id": 4, "name": "Electricity Board", "contact_email": "electricity@example.gov.in", "dept_category": "Electricity" }
 ]

@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import departments from "@/data/mockDepartments.json";
+import { useEffect, useState } from "react";
 import { buildComplaintMailto } from "@/lib/email";
+import { submitComplaint } from "@/lib/data";
 import type {
   ComplaintCategory,
   ComplaintInput,
+  Department,
   VerificationType,
 } from "@/types";
 
 const categories: ComplaintCategory[] = [
-  "Road / Pothole",
-  "Water / Pipeline",
+  "Road / Drainage",
+  "Pipes",
   "Electricity",
-  "Drainage",
-  "Blocked Road",
-  "Other",
+  "Network Towers",
 ];
 
 const idRules: Record<
@@ -42,16 +41,6 @@ const idRules: Record<
   },
 };
 
-// Category picks the most likely department automatically (user can still change it)
-const categoryDepartment: Record<ComplaintCategory, string | null> = {
-  "Road / Pothole": "Public Works Department",
-  "Water / Pipeline": "Water Supply & Drainage Board",
-  Electricity: "Electricity Board",
-  Drainage: "Municipal Drainage Board",
-  "Blocked Road": "Public Works Department",
-  Other: null,
-};
-
 type Errors = Partial<Record<string, string>>;
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -59,25 +48,44 @@ const MAX_BYTES = 5 * 1024 * 1024;
 export default function ComplaintModal({
   open,
   onClose,
+  departments,
 }: {
   open: boolean;
   onClose: () => void;
+  departments: Department[];
 }) {
   const [name, setName] = useState("");
   const [vType, setVType] = useState<VerificationType>("Aadhaar");
   const [idNumber, setIdNumber] = useState("");
-  const [category, setCategory] = useState<ComplaintCategory>("Road / Pothole");
-  const [department, setDepartment] = useState(departments[0].name);
+  const [category, setCategory] = useState<ComplaintCategory>("Road / Drainage");
+  const [departmentId, setDepartmentId] = useState<number | null>(null);
   const [street, setStreet] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
-  const [sent, setSent] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState<{ saved: boolean } | null>(null);
+
+  // Close with the Escape key
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
 
   if (!open) return null;
 
   const rule = idRules[vType];
+
+  // Only departments that handle this category (the database enforces this too)
+  const matching = departments.filter((d) => d.dept_category === category);
+  const available = matching.length > 0 ? matching : departments;
+  const selectedDept = available.find((d) => d.id === departmentId) ?? available[0];
 
   function validate(): Errors {
     const e: Errors = {};
@@ -99,11 +107,14 @@ export default function ComplaintModal({
     return e;
   }
 
-  function submit(ev: React.FormEvent) {
+  async function submit(ev: React.FormEvent) {
     ev.preventDefault();
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length) return;
+    if (!selectedDept) {
+      return setSubmitError("Departments are still loading. Please try again in a moment.");
+    }
 
     const payload: ComplaintInput = {
       citizen_name: name.trim(),
@@ -111,18 +122,25 @@ export default function ComplaintModal({
       category,
       street: street.trim(),
       description: description.trim(),
-      department,
+      department: selectedDept.name,
     };
-    // The ID number is only checked for format here. It is never stored or emailed.
-    // TODO: insert payload into citizen_complaints (verification_status 'Pending')
-    const dept = departments.find((x) => x.name === department)!;
-    window.location.href = buildComplaintMailto(dept.contact_email, payload);
-    setSent(true);
+
+    setBusy(true);
+    setSubmitError(null);
+    // The ID number is only checked for format above. It is never saved or emailed.
+    const res = await submitComplaint(payload, selectedDept.id, photo);
+    setBusy(false);
+
+    if (!res.ok) return setSubmitError(res.error);
+
+    setSent({ saved: res.saved });
+    window.location.href = buildComplaintMailto(selectedDept.contact_email, payload);
   }
 
   function close() {
-    setSent(false);
+    setSent(null);
     setErrors({});
+    setSubmitError(null);
     setIdNumber("");
     setConsent(false);
     onClose();
@@ -134,13 +152,19 @@ export default function ComplaintModal({
     errors[k] ? <p className="mt-1 text-xs font-medium text-red-600">{errors[k]}</p> : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4">
-      <div className="my-8 w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl">
-        <div className="flex items-start justify-between">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      onMouseDown={(e) => {
+        // Click on the dark backdrop closes the popup
+        if (e.target === e.currentTarget) close();
+      }}
+    >
+      <div className="flex max-h-full w-full max-w-lg flex-col rounded-3xl bg-white shadow-xl">
+        <div className="flex shrink-0 items-start justify-between border-b border-slate-100 p-6">
           <div>
             <h3 className="text-2xl font-bold">File a Complaint</h3>
             <p className="mt-1 text-sm text-slate-500">
-              Sent directly to the responsible department.
+              Recorded and sent directly to the responsible department.
             </p>
           </div>
           <button onClick={close} aria-label="Close" className="rounded-md px-2 py-1 text-slate-500 hover:bg-slate-100">
@@ -148,10 +172,18 @@ export default function ComplaintModal({
           </button>
         </div>
 
+        <div className="overflow-y-auto p-6 pt-0">
         {sent ? (
           <div className="mt-6 rounded-xl bg-emerald-50 p-5 text-sm text-emerald-900">
-            Your email app should have opened with the complaint prefilled. Press send there to
-            submit it to the department.
+            <p className="font-semibold">
+              {sent.saved
+                ? "Your complaint has been recorded."
+                : "Demo mode: your complaint was not saved to a database."}
+            </p>
+            <p className="mt-2">
+              Your email app should have opened with the complaint prefilled. Press send there to
+              notify the department.
+            </p>
             <button onClick={close} className="mt-4 block rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
               Done
             </button>
@@ -214,10 +246,8 @@ export default function ComplaintModal({
                 <select
                   value={category}
                   onChange={(e) => {
-                    const c = e.target.value as ComplaintCategory;
-                    setCategory(c);
-                    const d = categoryDepartment[c];
-                    if (d) setDepartment(d);
+                    setCategory(e.target.value as ComplaintCategory);
+                    setDepartmentId(null);
                   }}
                   className={input}
                 >
@@ -228,9 +258,15 @@ export default function ComplaintModal({
               </div>
               <div>
                 <label className={label}>Department</label>
-                <select value={department} onChange={(e) => setDepartment(e.target.value)} className={input}>
-                  {departments.map((d) => (
-                    <option key={d.id}>{d.name}</option>
+                <select
+                  value={selectedDept?.id ?? ""}
+                  onChange={(e) => setDepartmentId(Number(e.target.value))}
+                  className={input}
+                >
+                  {available.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -268,11 +304,22 @@ export default function ComplaintModal({
               {err("consent")}
             </div>
 
-            <button type="submit" className="w-full rounded-xl bg-emerald-700 px-4 py-3.5 font-semibold text-white transition hover:bg-emerald-800">
-              Submit Complaint
+            {submitError && (
+              <p className="rounded-lg bg-red-50 p-3 text-sm font-medium text-red-700">
+                {submitError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full rounded-xl bg-emerald-700 px-4 py-3.5 font-semibold text-white transition hover:bg-emerald-800 disabled:opacity-60"
+            >
+              {busy ? "Submitting..." : "Submit Complaint"}
             </button>
           </form>
         )}
+        </div>
       </div>
     </div>
   );

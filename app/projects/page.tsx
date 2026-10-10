@@ -1,24 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import data from "@/data/mockProjects.json";
-import departments from "@/data/mockDepartments.json";
 import { useView } from "@/components/layout/ViewProvider";
 import PublicWorksMap from "@/components/map/PublicWorksMap";
 import ProjectDrawer, { statusBadge } from "@/components/map/ProjectDrawer";
 import PhotoUploadModal from "@/components/citizen/PhotoUploadModal";
 import ComplaintModal from "@/components/citizen/ComplaintModal";
 import DisruptionBanner from "@/components/layout/DisruptionBanner";
+import { fetchDepartments, fetchProjects, fetchReports } from "@/lib/data";
+import type { Source } from "@/lib/data";
 import {
   countdownLabel,
   projectsWithNotices,
   stalledReportsLast7Days,
 } from "@/lib/projectUtils";
 import { useNow } from "@/lib/useNow";
-import type { CitizenReport, Project, ProjectStatus } from "@/types";
+import type { CitizenReport, Department, Project, ProjectStatus } from "@/types";
 
-const projects = data.projects as Project[];
-const reports = data.reports as CitizenReport[];
 const statuses: ("All" | ProjectStatus)[] = ["All", "Planned", "In Progress", "Delayed"];
 
 function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -35,11 +33,14 @@ function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
 export default function ProjectsPage() {
   const { view } = useView();
   const now = useNow();
-  const stalledCount = (projectId: number) =>
-    stalledReportsLast7Days(
-      reports.filter((r) => r.project_id === projectId),
-      now
-    );
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [reports, setReports] = useState<CitizenReport[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [source, setSource] = useState<Source>("mock");
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [geoMsg, setGeoMsg] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -48,6 +49,25 @@ export default function ProjectsPage() {
   const [sort, setSort] = useState<"nearest" | "ending">("nearest");
   const [selected, setSelected] = useState<Project | null>(null);
   const [complaintOpen, setComplaintOpen] = useState(false);
+
+  // Load everything from Supabase (falls back to demo data if unavailable)
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([fetchProjects(), fetchReports(), fetchDepartments()]).then(
+      ([p, r, d]) => {
+        if (cancelled) return;
+        setProjects(p.data);
+        setReports(r.data);
+        setDepartments(d.data);
+        setSource(p.source);
+        setLoadError(p.error ?? r.error ?? d.error ?? null);
+        setLoading(false);
+      }
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function requestLocation() {
     if (!("geolocation" in navigator)) {
@@ -71,6 +91,12 @@ export default function ProjectsPage() {
   useEffect(() => {
     requestLocation();
   }, []);
+
+  const stalledCount = (projectId: number) =>
+    stalledReportsLast7Days(
+      reports.filter((r) => r.project_id === projectId),
+      now
+    );
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -96,7 +122,7 @@ export default function ProjectsPage() {
       return a.km - b.km;
     });
     return rows;
-  }, [search, status, dept, sort, coords]);
+  }, [projects, search, status, dept, sort, coords]);
 
   if (view === "authority") {
     return (
@@ -112,6 +138,15 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-6">
+        {!loading && source === "mock" && (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <span className="font-semibold">Showing demo data.</span>{" "}
+            {loadError
+              ? `Could not read from the database: ${loadError}`
+              : "The database is not connected (check .env.local)."}
+          </div>
+        )}
+
         <div className="mb-6">
           <DisruptionBanner projects={projectsWithNotices(projects)} />
         </div>
@@ -193,8 +228,13 @@ export default function ProjectsPage() {
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {list.length === 0 && (
-              <p className="text-sm text-slate-500">No projects match your filters.</p>
+            {loading && <p className="text-sm text-slate-500">Loading projects...</p>}
+            {!loading && list.length === 0 && (
+              <p className="text-sm text-slate-500">
+                {projects.length === 0
+                  ? "No projects have been added yet."
+                  : "No projects match your filters."}
+              </p>
             )}
             {list.map(({ p, km }) => (
               <button
@@ -240,14 +280,18 @@ export default function ProjectsPage() {
 
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <PhotoUploadModal />
+              <PhotoUploadModal
+                projects={projects}
+                reports={reports}
+                onSubmitted={(r) => setReports((prev) => [r, ...prev])}
+              />
             </div>
 
             <div className="h-fit rounded-3xl border bg-white p-6 shadow-sm">
               <h3 className="text-xl font-bold">Have a grievance?</h3>
               <p className="mt-2 text-sm text-slate-600">
-                File a complaint with your name and ID verification. It is emailed straight to
-                the responsible department.
+                File a complaint with your name and ID verification. It is recorded and emailed
+                straight to the responsible department.
               </p>
               <button
                 onClick={() => setComplaintOpen(true)}
@@ -267,7 +311,11 @@ export default function ProjectsPage() {
           onClose={() => setSelected(null)}
         />
       )}
-      <ComplaintModal open={complaintOpen} onClose={() => setComplaintOpen(false)} />
+      <ComplaintModal
+        open={complaintOpen}
+        onClose={() => setComplaintOpen(false)}
+        departments={departments}
+      />
     </main>
   );
 }
