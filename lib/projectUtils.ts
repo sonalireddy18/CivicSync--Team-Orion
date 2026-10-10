@@ -1,4 +1,5 @@
-import type { CitizenReport, Project } from "@/types";
+import type { CitizenReport, Department, Project } from "@/types";
+import type { ComplaintCategory } from "@/types";
 
 /** Whole days until the end date. Negative means overdue. `now` comes from useNow(). */
 export function daysRemaining(
@@ -35,4 +36,73 @@ export function stalledReportsLast7Days(
 
 export function projectsWithNotices(projects: Project[]): Project[] {
   return projects.filter((p) => p.detour || p.status === "Delayed");
+}
+
+/** Straight-line distance in km between two coordinates. */
+export function distanceKm(
+  aLat: number,
+  aLng: number,
+  bLat: number,
+  bLng: number
+): number {
+  const rad = Math.PI / 180;
+  const dLat = (bLat - aLat) * rad;
+  const dLng = (bLng - aLng) * rad;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(aLat * rad) * Math.cos(bLat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+/** Groups reports by project id. */
+export function reportsByProject(
+  reports: CitizenReport[]
+): Map<number, CitizenReport[]> {
+  const map = new Map<number, CitizenReport[]>();
+  for (const r of reports) {
+    if (r.project_id == null) continue;
+    const list = map.get(r.project_id) ?? [];
+    list.push(r);
+    map.set(r.project_id, list);
+  }
+  return map;
+}
+
+export type ReportTone = "none" | "stalled" | "active" | "restored";
+
+/**
+ * Colour category for a project's report-count icon, taken from the most
+ * recent report: stalled -> red, restored -> green, active work -> light grey.
+ */
+export function reportTone(reports: CitizenReport[]): ReportTone {
+  if (reports.length === 0) return "none";
+  const latest = [...reports].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )[0];
+  const tag = latest.ai_status_tag ?? "";
+  if (tag.startsWith("Stalled")) return "stalled";
+  if (tag.startsWith("Restored")) return "restored";
+  return "active";
+}
+
+const knownCategories: ComplaintCategory[] = [
+  "Road / Drainage",
+  "Pipes",
+  "Electricity",
+  "Network Towers",
+];
+
+/** The complaint category a department handles, if it is one of the four known ones. */
+export function categoryForDepartment(
+  departments: Department[],
+  departmentId: number | null | undefined
+): ComplaintCategory | undefined {
+  if (departmentId == null) return undefined;
+  const c = departments.find((d) => d.id === departmentId)?.dept_category;
+  return knownCategories.find((k) => k === c);
+}
+
+/** Narrows a free-text complaint type to one of the four known categories. */
+export function asCategory(value: string | null | undefined): ComplaintCategory | undefined {
+  return knownCategories.find((k) => k === value);
 }

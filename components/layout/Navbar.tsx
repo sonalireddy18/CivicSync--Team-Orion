@@ -31,8 +31,8 @@ export default function Navbar() {
             <Link
               key={l.label}
               href={l.href}
-              className={`hover:text-emerald-700 ${
-                active ? "text-emerald-700" : ""
+              className={`transition-colors hover:text-emerald-700 ${
+                active ? "text-emerald-700" : "text-slate-600"
               }`}
             >
               {l.label}

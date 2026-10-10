@@ -54,4 +54,31 @@ export interface ComplaintInput {
   street: string;
   description: string;
   department: string; // department name, used in the email
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
+/** A complaint as shown to other citizens. Never includes name or ID details. */
+export interface ComplaintRecord {
+  id: number;
+  complaint_type: string;
+  department_id: number;
+  department: string;
+  street: string;
+  description: string;
+  latitude: number | null;
+  longitude: number | null;
+  complaint_status: string;
+  created_at: string;
+}
+
+/** Details carried from a map dot (or a map click) into the report / verification popups. */
+export interface ReportPrefill {
+  category?: ComplaintCategory;
+  departmentId?: number | null;
+  department?: string;
+  street?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  projectId?: number | null;
 }

@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { buildComplaintMailto } from "@/lib/email";
+import { buildComplaintGmailUrl } from "@/lib/email";
 import { submitComplaint } from "@/lib/data";
 import type {
   ComplaintCategory,
   ComplaintInput,
+  ComplaintRecord,
   Department,
+  ReportPrefill,
   VerificationType,
 } from "@/types";
 
@@ -49,24 +51,33 @@ export default function ComplaintModal({
   open,
   onClose,
   departments,
+  prefill,
+  onSubmitted,
 }: {
   open: boolean;
   onClose: () => void;
   departments: Department[];
+  /** Details deduced from a map dot or map click: category, department, area, coordinates. */
+  prefill?: ReportPrefill;
+  onSubmitted?: (complaint: ComplaintRecord) => void;
 }) {
   const [name, setName] = useState("");
   const [vType, setVType] = useState<VerificationType>("Aadhaar");
   const [idNumber, setIdNumber] = useState("");
-  const [category, setCategory] = useState<ComplaintCategory>("Road / Drainage");
-  const [departmentId, setDepartmentId] = useState<number | null>(null);
-  const [street, setStreet] = useState("");
+  const [category, setCategory] = useState<ComplaintCategory>(
+    prefill?.category ?? "Road / Drainage"
+  );
+  const [departmentId, setDepartmentId] = useState<number | null>(
+    prefill?.departmentId ?? null
+  );
+  const [street, setStreet] = useState(prefill?.street ?? "");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [sent, setSent] = useState<{ saved: boolean } | null>(null);
+  const [sent, setSent] = useState<{ saved: boolean; gmailUrl: string } | null>(null);
 
   // Close with the Escape key
   useEffect(() => {
@@ -84,7 +95,14 @@ export default function ComplaintModal({
 
   // Only departments that handle this category (the database enforces this too)
   const matching = departments.filter((d) => d.dept_category === category);
-  const available = matching.length > 0 ? matching : departments;
+  let available = matching.length > 0 ? matching : departments;
+  const preDept =
+    prefill?.departmentId != null
+      ? departments.find((d) => d.id === prefill.departmentId)
+      : undefined;
+  if (preDept && !available.some((d) => d.id === preDept.id)) {
+    available = [preDept, ...available];
+  }
   const selectedDept = available.find((d) => d.id === departmentId) ?? available[0];
 
   function validate(): Errors {
@@ -123,7 +141,13 @@ export default function ComplaintModal({
       street: street.trim(),
       description: description.trim(),
       department: selectedDept.name,
+      latitude: prefill?.latitude ?? null,
+      longitude: prefill?.longitude ?? null,
     };
+
+    // Open the Gmail tab now, while the click is still fresh, so the browser
+    // doesn't block it as a pop-up. It is pointed at Gmail once the save works.
+    const gmailTab = window.open("about:blank", "_blank");
 
     setBusy(true);
     setSubmitError(null);
@@ -131,10 +155,18 @@ export default function ComplaintModal({
     const res = await submitComplaint(payload, selectedDept.id, photo);
     setBusy(false);
 
-    if (!res.ok) return setSubmitError(res.error);
+    if (!res.ok) {
+      gmailTab?.close();
+      return setSubmitError(res.error);
+    }
 
-    setSent({ saved: res.saved });
-    window.location.href = buildComplaintMailto(selectedDept.contact_email, payload);
+    const gmailUrl = buildComplaintGmailUrl(selectedDept.contact_email, payload);
+    if (gmailTab) {
+      gmailTab.opener = null;
+      gmailTab.location.href = gmailUrl;
+    }
+    setSent({ saved: res.saved, gmailUrl });
+    onSubmitted?.(res.complaint);
   }
 
   function close() {
@@ -181,15 +213,29 @@ export default function ComplaintModal({
                 : "Demo mode: your complaint was not saved to a database."}
             </p>
             <p className="mt-2">
-              Your email app should have opened with the complaint prefilled. Press send there to
-              notify the department.
+              Gmail should have opened in a new tab with the complaint prefilled. Press send there
+              to notify the department.
             </p>
+            <a
+              href={sent.gmailUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block font-semibold text-emerald-800 underline"
+            >
+              Gmail didn’t open? Open it here
+            </a>
             <button onClick={close} className="mt-4 block rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
               Done
             </button>
           </div>
         ) : (
           <form onSubmit={submit} noValidate className="mt-6 space-y-5">
+            {prefill?.latitude != null && prefill.longitude != null && (
+              <p className="rounded-xl bg-emerald-50 px-4 py-3 text-xs font-medium text-emerald-800">
+                📍 Pinned on the map at {prefill.latitude.toFixed(5)}, {prefill.longitude.toFixed(5)}.
+                Category, department and area are filled in from the map. Change them if needed.
+              </p>
+            )}
             <div>
               <label className={label}>Full name</label>
               <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} className={input} placeholder="As on your ID" />

@@ -118,7 +118,6 @@ export default function ProjectDrawer({
                     {r.ai_status_tag ?? "Untagged"}
                   </span>
                   <span className="text-xs text-slate-400">
-                    👍 {r.upvotes} ·{" "}
                     {new Date(r.created_at).toLocaleDateString("en-IN")}
                   </span>
                 </div>
