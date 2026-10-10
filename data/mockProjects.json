@@ -1,0 +1,100 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "PWD Road Resurfacing & Bitumen Topping",
+      "department": "Public Works Department",
+      "street": "Gandhi Nagar Main Road",
+      "status": "In Progress",
+      "status_color": "#ea580c",
+      "budget": "₹1.8 Cr",
+      "contractor": "Sri Murugan Constructions",
+      "start_date": "2026-09-01",
+      "end_date": "2026-11-15",
+      "delay_reason": null,
+      "detour": "Use Nehru Street via Market Junction",
+      "latitude": 11.0183,
+      "longitude": 76.9725
+    },
+    {
+      "id": 2,
+      "title": "Underground Storm Water Drainage Laying",
+      "department": "Municipal Drainage Board",
+      "street": "Gandhi Nagar 2nd Cross",
+      "status": "Delayed",
+      "status_color": "#b91c1c",
+      "budget": "₹3.2 Cr",
+      "contractor": "Kaveri Infra Pvt Ltd",
+      "start_date": "2026-07-10",
+      "end_date": "2026-10-30",
+      "delay_reason": "Contractor equipment shortage and monsoon rains",
+      "detour": "Pedestrian access only; vehicles use Anna Salai",
+      "latitude": 11.0221,
+      "longitude": 76.9681
+    },
+    {
+      "id": 3,
+      "title": "Water Pipeline Replacement",
+      "department": "Water Supply & Drainage Board",
+      "street": "Rose Garden Lane",
+      "status": "Planned",
+      "status_color": "#16a34a",
+      "budget": "₹95 Lakh",
+      "contractor": null,
+      "start_date": "2026-12-01",
+      "end_date": "2027-02-28",
+      "delay_reason": null,
+      "detour": null,
+      "latitude": 11.0102,
+      "longitude": 76.9811
+    },
+    {
+      "id": 4,
+      "title": "Street Light LED Retrofit",
+      "department": "Electricity Board",
+      "street": "Temple Road",
+      "status": "In Progress",
+      "status_color": "#ea580c",
+      "budget": "₹40 Lakh",
+      "contractor": "BrightWay Electricals",
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-25",
+      "delay_reason": null,
+      "detour": null,
+      "latitude": 11.0305,
+      "longitude": 76.9602
+    }
+  ],
+  "reports": [
+    {
+      "id": 1,
+      "project_id": 2,
+      "image_url": null,
+      "ai_status_tag": "Stalled / Abandoned",
+      "notes": "No machinery or crew seen for 5 consecutive days. Open trench near the school gate.",
+      "upvotes": 14,
+      "created_at": "2026-10-08T09:30:00Z",
+      "conversation_id": 101
+    },
+    {
+      "id": 2,
+      "project_id": 2,
+      "image_url": null,
+      "ai_status_tag": "Stalled / Abandoned",
+      "notes": "Trench filled with rainwater, mosquito risk.",
+      "upvotes": 6,
+      "created_at": "2026-10-09T16:10:00Z",
+      "conversation_id": null
+    },
+    {
+      "id": 3,
+      "project_id": 1,
+      "image_url": null,
+      "ai_status_tag": "Active Work",
+      "notes": "Bitumen pavers active on eastern lane.",
+      "upvotes": 3,
+      "created_at": "2026-10-09T08:00:00Z",
+      "conversation_id": null
+    }
+  ]
+}

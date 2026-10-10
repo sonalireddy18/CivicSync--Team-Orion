@@ -1,50 +1,19 @@
-
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useView } from "@/components/layout/ViewProvider";
 
 export default function Home() {
-  const [view, setView] = useState<"citizen" | "authority">("citizen");
+  const { view, setView } = useView();
+  const router = useRouter();
+
+  function go(v: "citizen" | "authority") {
+    setView(v);
+    router.push("/projects");
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between border-b bg-white px-8 py-5">
-        <h1 className="text-2xl font-bold text-emerald-700">
-          CivicSync
-        </h1>
-
-        <div className="hidden gap-8 text-sm font-medium md:flex">
-          <a href="#home" className="hover:text-emerald-700">Home</a>
-          <a href="#features" className="hover:text-emerald-700">Features</a>
-          <a href="#about" className="hover:text-emerald-700">About</a>
-        </div>
-
-        <div className="flex gap-2 rounded-lg bg-slate-100 p-1">
-          <button
-            onClick={() => setView("citizen")}
-            className={`rounded-md px-3 py-2 text-sm font-medium ${
-              view === "citizen"
-                ? "bg-emerald-700 text-white"
-                : "text-slate-600 hover:bg-white"
-            }`}
-          >
-            Citizen
-          </button>
-
-          <button
-            onClick={() => setView("authority")}
-            className={`rounded-md px-3 py-2 text-sm font-medium ${
-              view === "authority"
-                ? "bg-emerald-700 text-white"
-                : "text-slate-600 hover:bg-white"
-            }`}
-          >
-            Authority
-          </button>
-        </div>
-      </nav>
-
       {/* Hero */}
       <section
         id="home"
@@ -66,14 +35,14 @@ export default function Home() {
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
           <button
-            onClick={() => setView("citizen")}
+            onClick={() => go("citizen")}
             className="rounded-lg bg-emerald-700 px-7 py-3.5 font-semibold text-white shadow-sm transition hover:bg-emerald-800"
           >
             Explore Public Works →
           </button>
 
           <button
-            onClick={() => setView("authority")}
+            onClick={() => go("authority")}
             className="rounded-lg border border-slate-300 bg-white px-7 py-3.5 font-semibold transition hover:bg-slate-100"
           >
             Municipal Dashboard
@@ -89,7 +58,7 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section id="features" className="border-t bg-white px-6 py-20">
+      <section id="features" className="scroll-mt-20 border-t bg-white px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center">
             <h3 className="text-3xl font-bold">One platform. Better civic works.</h3>
