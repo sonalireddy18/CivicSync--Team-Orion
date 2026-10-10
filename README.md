@@ -1,185 +1,244 @@
-
-#JanDrishti - "Public Projects, Public Visibility"
-
-# CivicTech — Improving Transparency and Coordination in Public Works Projects
+# CivicSync
+### Improving Transparency and Coordination in Public Works Projects
 
 ## Overview
 
-CivicTech is a web-based platform designed to improve transparency, accountability, and coordination in public infrastructure projects. It connects residents, municipal authorities, utility departments, and contractors through a centralized platform that provides real-time visibility into public works.
+CivicSync is a civic technology platform designed to improve transparency, accountability, and coordination in public infrastructure projects. It connects citizens and municipal authorities through a centralized platform where residents can discover public works in their neighbourhood, track construction progress, report issues, and verify on-site activity.
 
-From road repairs and drainage maintenance to pipeline installations, CivicTech allows users to explore ongoing projects, understand their timelines, identify responsible authorities, and report issues with photographic evidence.
+Public works such as road resurfacing, drainage construction, underground cable installation, and pipeline replacement are often managed by different departments with limited coordination. This can result in repeated road excavation, construction delays, traffic disruptions, and a lack of public accountability.
 
-The platform also uses AI-powered schedule conflict detection to identify potential overlaps between public works projects and AI-based photo verification to help assess reported construction progress.
-
-**Problem Statement:** Information about public works projects is fragmented across departments, making it difficult for citizens to track progress, understand delays, or hold responsible authorities accountable. Poor interdepartmental coordination can also result in repeated excavation of the same roads and unnecessary public expenditure.
-
-**Our Solution:** A centralized, interactive civic infrastructure platform that combines project tracking, geospatial visualization, AI-assisted conflict detection, and citizen feedback to promote transparent and coordinated public works.
+CivicSync addresses these challenges by bringing project information, citizen feedback, progress reports, and coordination insights into one accessible platform.
 
 ## Features
 
-- **Interactive Infrastructure Map:** Visualize ongoing public works projects using a map with color-coded markers, project locations, and relevant details.
-- **Public Works Project Tracking:** View project descriptions, responsible departments, planned timelines, current status, and expected completion dates.
-- **AI-Powered Schedule Conflict Detection:** Identify potentially overlapping projects based on their locations and timelines, helping departments coordinate work and avoid repeated road excavation.
-- **Citizen Photo Verification:** Allow residents to upload photographs of construction sites and use AI-assisted image analysis to assess whether visible conditions are consistent with reported progress.
-- **Citizen Issue Reporting:** Enable residents to report stalled construction, unsafe conditions, or discrepancies between reported and observed progress.
-- **Transparency and Accountability:** Make project information and reported issues easier to access, understand, and follow up on.
-- **Centralized Project Information:** Bring information about projects from different public utility departments into one unified interface.
+### 1. Public Works Discovery and Tracking
+- Browse planned, ongoing, and delayed infrastructure projects.
+- View project details, including department, location, contractor, budget, start date, and expected completion date.
+- Search and filter projects by name, department, and status.
+- Sort projects by proximity to the citizen's location.
+- View estimated remaining project duration and reported disruptions.
 
-*Note: Features depend on the functionality implemented and data available in the deployed version.*
+### 2. Interactive Neighborhood Map
+- Visualize public works across Chennai using an interactive map.
+- Display color-coded markers for planned, ongoing, delayed, and reported projects.
+- Explore nearby construction activity and identify potential disruptions.
+- View project details through map interactions.
+
+### 3. Citizen Complaints and Issue Reporting
+- Submit complaints related to public infrastructure and municipal services.
+- Associate complaints with relevant departments and locations.
+- Track complaint statuses, including Submitted, Under Review, and Resolved.
+- Allow authorities to update complaint statuses and keep citizens informed.
+
+### 4. Citizen Site Progress Reports
+- Upload photographs showing the current state of construction sites.
+- Associate reports with specific public works projects.
+- Categorize reported conditions, such as active work, stalled construction, or restored roads.
+- Display community-submitted reports and their verification status.
+- Use community feedback to highlight potentially stalled or abandoned projects.
+
+### 5. Visual Site Verification
+- Provide a workflow for inspecting construction-site photographs.
+- Evaluate reported site conditions to help identify discrepancies between expected and observed progress.
+- Present inspection results through the authority dashboard.
+
+### 6. Coordination Clash Detection
+- Identify overlapping or conflicting public works scheduled on the same street.
+- Display affected projects, departments, severity, and detection timestamps.
+- Generate actionable recommendations to improve coordination between departments.
+- Help authorities avoid repeated excavation and unnecessary disruption.
+
+### 7. Municipal Authority Dashboard
+- View and manage registered public works projects.
+- Monitor complaints and citizen-submitted site reports.
+- Review coordination clashes and their severity.
+- Update complaint statuses and refresh project information.
+- Use citizen feedback to improve project monitoring and accountability.
+
+### 8. Citizen and Authority Views
+- Provide separate interfaces for citizens and municipal authorities.
+- Give citizens visibility into infrastructure activity and a way to report concerns.
+- Equip authorities with tools for monitoring projects, resolving complaints, and coordinating work.
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Frontend and Framework | Next.js (App Router), React, TypeScript | Responsive interface, routing, and application logic |
-| Styling and UI | Tailwind CSS, shadcn/ui | Responsive layouts and reusable UI components |
-| Icons | Lucide Icons | Consistent interface icons |
-| Interactive Maps | Leaflet.js, React-Leaflet | Geographic visualization of public works |
-| Database | Supabase PostgreSQL | Storage and retrieval of project information, reports, and schedules |
-| Image Storage | Supabase Storage | Storage of citizen-uploaded photographs |
-| AI Integration | Google Gemini Flash API (`@google/genai`) | Schedule conflict analysis and image-based progress assessment |
-| Backend | Next.js API Routes | Server-side processing and AI integration |
-| Deployment | Vercel | Application hosting and deployment |
+| Technology | Purpose |
+|---|---|
+| Next.js (App Router) | Application framework, routing, frontend rendering, and backend API routes |
+| TypeScript | Type-safe application development |
+| Tailwind CSS | Responsive styling and layout |
+| shadcn/ui | Reusable UI components and interface elements |
+| Leaflet.js | Interactive map rendering |
+| React-Leaflet | React integration for map components |
+| Supabase | PostgreSQL database and image storage |
+| Next.js API Routes | Server-side operations, including clash detection and photo verification |
+| OpenStreetMap | Map tiles and geographic visualization |
 
 ## Architecture / How It Works
 
-CivicTech follows a full-stack web architecture in which the frontend, backend API routes, database, storage, and AI services work together.
-
-### System Workflow
-
-1. **Project Data:** Public works project information, including location, department, schedule, and status, is stored in Supabase.
-2. **Map Visualization:** The frontend retrieves project data and displays projects on an interactive Leaflet map.
-3. **Conflict Detection:** Project locations and timelines are analyzed to identify potential spatial and scheduling overlaps. Gemini can assist in explaining or evaluating detected conflicts.
-4. **Photo Verification:** Residents upload photographs of project sites. The backend processes the images using the Gemini API to generate an assessment of visible construction progress.
-5. **Issue Reporting:** Citizens submit reports and supporting evidence, which can be stored for review and follow-up.
-6. **Deployment:** The application is hosted on Vercel and communicates with Supabase and the Gemini API through the appropriate client and server-side integrations.
-
-### High-Level Architecture
+CivicSync follows a full-stack web architecture in which the Next.js application handles the user interface, navigation, and server-side API operations.
 
 ```text
-Citizens / Municipal Authorities
-              |
-              v
-      Next.js Frontend
-   React + TypeScript + Tailwind
-              |
-       +------+------+
-       |             |
-       v             v
- Interactive Map   API Routes
- Leaflet.js        Next.js Backend
-                         |
-             +-----------+-----------+
-             |           |           |
-             v           v           v
-          Supabase     Gemini AI    Supabase
-          Database     Analysis     Storage
-             |           |           |
-             +-----------+-----------+
-                         |
-                         v
-              Results and Project Updates
-                         |
-                         v
-                 User Interface
+                    CivicSync
+                        |
+          +-------------+-------------+
+          |                           |
+     Citizen View                Authority View
+          |                           |
+          +-------------+-------------+
+                        |
+              Next.js Application
+          (App Router + TypeScript)
+                        |
+          +-------------+-------------+
+          |             |             |
+     Project Data   Complaints    Site Reports
+          |             |             |
+          +-------------+-------------+
+                        |
+                 API Routes
+          +-------------+-------------+
+          |                           |
+    Clash Detection             Photo Verification
+          |                           |
+          +-------------+-------------+
+                        |
+              Supabase PostgreSQL
+                 + Storage
+                        |
+             Interactive Map View
+             (Leaflet + OSM)
 ```
+
+### Core Workflows
+
+**Project tracking:** Citizens browse projects, filter by status or department, and inspect information about planned and ongoing infrastructure work.
+
+**Complaint management:** Citizens submit infrastructure complaints. Authorities review the submissions and update their statuses so that progress is visible to residents.
+
+**Site progress verification:** Citizens submit site photographs associated with a project. The verification workflow evaluates the reported condition and presents the result to authorities.
+
+**Coordination clash detection:** The application compares public works schedules and locations to identify potential conflicts. Detected clashes are presented with severity information and recommendations for coordinating the affected projects.
+
+**Data management:** Supabase provides persistent storage for structured project information and, where configured, citizen-submitted photographs.
 
 ## Project Structure
 
-The project follows a modular Next.js App Router structure.
-
 ```text
-civictech/
-├── public/
-│   └── images/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── detect-clash/
-│   │   │   │   └── route.ts
-│   │   │   └── verify-photo/
-│   │   │       └── route.ts
-│   │   ├── dashboard/
-│   │   │   └── page.tsx
-│   │   ├── map/
-│   │   │   └── page.tsx
-│   │   ├── report/
-│   │   │   └── page.tsx
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   └── globals.css
-│   ├── components/
-│   │   ├── ui/
-│   │   ├── project-card.tsx
-│   │   ├── project-map.tsx
-│   │   ├── conflict-alert.tsx
-│   │   └── photo-upload.tsx
-│   ├── lib/
-│   │   ├── supabase.ts
-│   │   └── utils.ts
-│   └── types/
-│       └── project.ts
-├── .env.local.example
+civic/
+├── .vscode/
+│   └── launch.json
+├── app/
+│   ├── conversations/
+│   │   └── page.tsx
+│   ├── projects/
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── authority/
+│   │   ├── AddProjectModal.tsx
+│   │   ├── AuthorityMap.tsx
+│   │   ├── AuthorityProjects.tsx
+│   │   ├── check_complaints.sql
+│   │   ├── ComplaintsPanel.tsx
+│   │   ├── CoordinationClashesPanel.tsx
+│   │   ├── LocationPicker.tsx
+│   │   ├── ProposalForm.tsx
+│   │   └── ReportsPanel.tsx
+│   ├── citizen/
+│   │   ├── CappedList.tsx
+│   │   ├── ComplaintLog.tsx
+│   │   ├── ComplaintModal.tsx
+│   │   ├── PhotoUploadModal.tsx
+│   │   └── ProjectCombobox.tsx
+│   ├── layout/
+│   │   ├── DisruptionBanner.tsx
+│   │   ├── Navbar.tsx
+│   │   └── ViewProvider.tsx
+│   └── map/
+│       ├── ProjectDrawer.tsx
+│       └── PublicWorksMap.tsx
+├── data/
+│   ├── mockDepartments.json
+│   └── mockProjects.json
+├── lib/
+│   ├── data.ts
+│   ├── email.ts
+│   ├── gemini.ts
+│   ├── projectUtils.ts
+│   ├── supabase.ts
+│   ├── timeAgo.ts
+│   └── useNow.ts
+├── types/
+│   └── index.ts
+├── .env.local
 ├── .gitignore
-├── package.json
-├── package-lock.json
-├── tsconfig.json
+├── AGENTS.md
+├── eslint.config.mjs
+├── next-env.d.ts
 ├── next.config.ts
-└── README.md
+├── package-lock.json
+├── package.json
+├── README.md
+└── tsconfig.json
 ```
 
-*The structure above is a reference. Actual paths may differ depending on the repository and implementation.*
+### Directory Overview
+
+- **`app/`** — Next.js App Router pages, global styles, and application layout.
+- **`components/authority/`** — Municipal authority dashboard, project management, complaint handling, coordination clash detection, and report management.
+- **`components/citizen/`** — Citizen-facing complaint submission, project selection, and site photo upload components.
+- **`components/layout/`** — Shared navigation, disruption alerts, and view management.
+- **`components/map/`** — Interactive public works map and project detail drawer.
+- **`data/`** — Mock project and department data used by the application.
+- **`lib/`** — Data access, Supabase integration, email utilities, Gemini integration, project helpers, and time utilities.
+- **`types/`** — Shared TypeScript type definitions.
+- **`public/`** — Static assets, if present in the repository.
+- **Configuration files** — Next.js, TypeScript, ESLint, npm, and Git configuration.
 
 ## Installation
 
 ### Prerequisites
 
-Ensure that the following are installed:
-
-- Node.js (LTS version recommended)
+- Node.js (a current LTS release is recommended)
 - npm
 - Git
-- A Supabase account and project
-- A Google Gemini API key
+- A Supabase project if persistent database and storage features are enabled
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd civictech
+cd civicsync
 ```
 
-Replace the repository URL with your actual GitHub repository URL.
+Replace the repository URL with the actual GitHub URL.
 
-### 2. Install Dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure Environment Variables
+### 3. Configure environment variables
 
 Create a `.env.local` file in the project root.
+
+Add the environment variables required by the application. For example, if the application uses the Supabase JavaScript client:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_publishable_or_anon_key
-GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Use the Supabase key format supported by your project. Keep the Gemini API key and any privileged Supabase secret keys on the server. Never expose them through `NEXT_PUBLIC_` variables or commit real credentials to GitHub.
+Use the actual variable names expected by your code and your Supabase project credentials. Never expose a Supabase service-role key in client-side code or commit secrets to Git.
 
-### 4. Configure Supabase
+If the application currently uses mock data, configure Supabase only when required by the implemented features.
 
-1. Create a Supabase project.
-2. Create the required PostgreSQL tables for public works projects and citizen reports.
-3. Configure a Storage bucket for uploaded photographs.
-4. Configure appropriate database permissions and Row Level Security (RLS) policies.
-5. Add the project URL and required keys to `.env.local`.
-
-The database schema and storage policies should match the application's actual implementation.
-
-### 5. Start the Development Server
+### 4. Start the development server
 
 ```bash
 npm run dev
@@ -187,155 +246,145 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 6. Build for Production
+### 5. Build for production
 
 ```bash
 npm run build
-npm run start
+npm start
 ```
+
+Run the build command to check whether the application compiles successfully before deployment.
 
 ## Usage
 
-1. Open the CivicTech web application.
-2. Explore the dashboard to view ongoing public infrastructure projects.
-3. Open the interactive map to identify construction sites and understand their locations.
-4. Select a project to inspect its department, purpose, status, and planned completion date.
-5. Use the conflict detection feature to examine potential overlaps between projects.
-6. Upload a photograph of a construction site to request an AI-assisted progress assessment.
-7. Submit a report if you observe stalled work, unsafe conditions, or discrepancies.
-8. Review the available project information and reports to understand the status of public works in your area.
+### For Citizens
 
-Available actions depend on the features enabled in the deployed application.
+1. Open CivicSync and navigate to the public works section.
+2. Explore projects using the interactive map or project listings.
+3. Search for nearby projects and filter them by status or department.
+4. Review project schedules, contractors, budgets, and reported disruptions.
+5. Submit a complaint when an infrastructure issue needs attention.
+6. Upload a site photograph to report the observed state of a construction project.
+7. Follow complaint updates and review reports submitted by other citizens.
+
+### For Municipal Authorities
+
+1. Switch to the authority interface.
+2. Review registered projects and their current statuses.
+3. Inspect citizen complaints and update their statuses.
+4. Review submitted site reports and verification results.
+5. Examine detected coordination clashes.
+6. Use the recommendations to coordinate project schedules and reduce repeated excavation.
 
 ## Example
 
-### Scenario: Preventing Repeated Road Excavation
+Consider a road in Chennai where drainage construction and water-main replacement are scheduled close together.
 
-Suppose a municipal department schedules road resurfacing on Main Road from October 15 to October 20. A water utility department independently schedules pipeline repairs on the same road from October 17 to October 22.
+Without a shared coordination platform, one department might restore the road after completing its work, only for another department to excavate the same road shortly afterward.
 
-Without coordination, the road may be resurfaced only to be excavated again days later.
+With CivicSync:
 
-**How CivicTech helps:**
+1. Both public works projects are registered with their respective departments, locations, and schedules.
+2. The coordination engine identifies a potential overlap between the projects.
+3. The authority dashboard displays the affected projects, severity, and a recommendation to coordinate the work.
+4. Residents can view the projects and understand the reason for construction-related disruptions.
+5. Citizens submit photographs and reports to highlight stalled work or discrepancies at the site.
+6. Authorities use the information to coordinate schedules and improve accountability.
 
-1. Both projects are registered with their locations, timelines, and responsible departments.
-2. The conflict detection system identifies a potential spatial and scheduling overlap.
-3. The platform generates a conflict alert highlighting the affected area and overlapping dates.
-4. Authorities can review the alert and coordinate the work before finalizing their schedules.
-5. Residents can view the planned work and anticipate possible disruptions.
-
-### Scenario: Verifying Construction Progress
-
-A drainage repair project is marked as 80% complete, but a resident observes that the site appears inactive.
-
-1. The resident uploads a photograph of the site.
-2. The AI service analyzes visible conditions in the photograph.
-3. The application presents an assessment of the visible progress and any apparent discrepancy.
-4. The report can be reviewed by the responsible authority for further verification.
-
-AI-generated assessments are advisory. A photograph alone cannot reliably establish the actual percentage of completion, prove that work has stalled, or determine responsibility.
+This workflow demonstrates how shared project information and citizen participation can help reduce avoidable disruption.
 
 ## Design Decisions
 
-- **Single Full-Stack Framework:** Next.js allows frontend pages and backend API routes to live in one repository, reducing development and deployment overhead during a time-constrained hackathon.
-- **Open-Source Mapping:** Leaflet provides interactive maps without requiring a paid mapping subscription or credit card.
-- **Managed Backend Services:** Supabase simplifies database management and image storage, allowing the team to focus on the application's core features.
-- **AI-Assisted Analysis:** Gemini supports image understanding and natural-language analysis, enabling useful AI functionality without training a custom model.
-- **Geospatial and Temporal Conflict Detection:** Location and date overlap are used as the basis for identifying potential project conflicts. More advanced geographic checks can be added as the application evolves.
-- **Modular Components:** Reusable UI components and separate API routes make the application easier to maintain and extend.
-- **Rapid Deployment:** Vercel integrates with GitHub to streamline hosting and provide a public demonstration URL.
+### Unified Application Architecture
+Next.js combines the frontend, routing, and server-side API endpoints in a single repository, reducing deployment complexity and avoiding the need for a separate backend service.
+
+### TypeScript
+TypeScript helps identify type errors and maintain consistent data structures across project records, complaints, reports, and API responses.
+
+### Tailwind CSS and shadcn/ui
+These technologies enable consistent styling, reusable components, and responsive interfaces while reducing the amount of custom CSS required.
+
+### Leaflet and OpenStreetMap
+An open-source mapping stack provides geographic visualization without requiring a paid mapping API by default. Tile-provider terms and usage limits still apply.
+
+### Supabase
+PostgreSQL supports structured data such as projects, complaints, and reports. Supabase Storage can be used to store photographs and associate them with the relevant records.
+
+### Coordination-Focused Design
+The platform goes beyond displaying projects by identifying potential conflicts and presenting recommendations that can help municipal authorities coordinate infrastructure work.
+
+### Citizen Participation
+Citizen-submitted reports provide an additional source of information about on-site conditions, complementing official project records.
 
 ## Challenges & Solutions
 
-| Challenge | Solution |
-|---|---|
-| Scattered public works information | Centralize project details in a unified platform. |
-| Repeated excavation caused by poor coordination | Detect potential conflicts using project locations and schedules. |
-| Lack of visibility into project progress | Display project status, timelines, and relevant updates. |
-| Difficulty validating reported progress | Use AI-assisted analysis of citizen-uploaded photographs. |
-| Limited development time | Use Next.js, Supabase, reusable UI components, and managed AI services. |
-| Unreliable or incomplete project data | Clearly identify missing information and support review by responsible authorities. |
-| AI prediction errors | Present AI output as an advisory assessment and retain human review for consequential decisions. |
+### Fragmented Public Works Information
+**Challenge:** Project details are often spread across departments, making it difficult to understand the full scope of construction in a neighborhood.
+
+**Solution:** CivicSync presents project information through a centralized listing and interactive map.
+
+### Overlapping Construction Schedules
+**Challenge:** Different departments may schedule work on the same street during overlapping periods.
+
+**Solution:** A clash-detection workflow highlights potential conflicts and provides recommendations for coordination.
+
+### Limited Visibility into On-Site Progress
+**Challenge:** Official project status may not always reflect the actual conditions at a construction site.
+
+**Solution:** Citizen-submitted photographs and site reports provide additional information for review and verification.
+
+### Complaint Follow-Up
+**Challenge:** Residents may not know whether their complaints have been reviewed or resolved.
+
+**Solution:** Status tracking makes complaint progress visible through the citizen interface.
+
+### Deployment and Integration Constraints
+**Challenge:** A full-stack civic platform needs mapping, persistent storage, server-side processing, and a deployable frontend.
+
+**Solution:** Next.js, Supabase, and Leaflet provide an integrated development stack with relatively little infrastructure overhead.
 
 ## Testing & Benchmarking
 
-The application should be tested across its main workflows before deployment.
+The following areas should be tested to validate the implementation:
 
-### Functional Testing
+- **Project listings:** Verify search, filtering, sorting, project details, and status display.
+- **Interactive map:** Check marker rendering, project selection, map navigation, and location-related behavior.
+- **Complaint management:** Test complaint submission, validation, status transitions, and persistence.
+- **Site reports:** Verify image upload, project association, report display, and supported verification outcomes.
+- **Clash detection:** Test projects with overlapping schedules and locations, projects without conflicts, and boundary cases.
+- **API routes:** Validate request payloads, response formats, error handling, and invalid inputs.
+- **Database integration:** Confirm that projects, complaints, and reports persist correctly when Supabase is enabled.
+- **Responsive design:** Test layouts on desktop, tablet, and mobile screens.
+- **Production build:** Run `npm run build` and resolve compilation or type errors before deployment.
 
-- Verify that project records load and display correctly.
-- Test map markers, project details, and location selection.
-- Test conflict detection using overlapping and non-overlapping project schedules.
-- Verify that photo uploads work and invalid file types are rejected.
-- Test AI responses for relevant images and malformed requests.
-- Verify that issue reports are stored and can be retrieved as intended.
-- Check error handling for missing API keys, database failures, and unsuccessful AI requests.
+### Suggested Performance Metrics
 
-### Performance Testing
+| Area | Metric |
+|---|---|
+| Project discovery | Search and filter response time |
+| Clash detection | Detection latency and conflict precision |
+| Site verification | Verification accuracy against reviewed examples |
+| API reliability | Success rate and error rate |
+| User experience | Task completion time and responsive usability |
 
-- Measure initial page load and map rendering time.
-- Measure the response time of the conflict detection API.
-- Measure the latency of AI-based photo assessment.
-- Test how the interface behaves as the number of displayed projects increases.
-
-### Conflict Detection Evaluation
-
-Use sample projects with known outcomes to assess whether the system correctly identifies:
-
-- Projects with overlapping dates and locations.
-- Projects that overlap in time but are geographically separate.
-- Projects that share a location but occur at different times.
-- Projects with missing or incomplete schedules.
-
-### AI Evaluation
-
-Test the photo assessment feature on representative images and manually review the generated results. Evaluate whether the responses are relevant, consistent, and appropriately cautious.
-
-Benchmark figures should be reported only after actual tests have been conducted. AI-generated assessments should not be treated as ground-truth verification.
+Actual performance results should be measured and documented after running the tests. Detection accuracy should be evaluated against labeled examples rather than inferred from successful demonstrations.
 
 ## Future Improvements
 
-- Integrate official municipal and utility department APIs for reliable, up-to-date project information.
-- Add role-based dashboards for residents, contractors, and government officials.
-- Implement notifications for schedule changes, delays, and nearby construction.
-- Add project dependencies and shared road-segment analysis for more accurate coordination.
-- Introduce historical project data and analytics to identify recurring delays and inefficient planning.
-- Improve citizen reporting with geotagged images, timestamps, and duplicate-report detection.
-- Add an authority response workflow with status tracking and resolution history.
-- Implement stronger verification mechanisms, including human review and comparison with historical site images.
-- Support multiple municipalities and regional languages.
-- Add authentication, audit logs, access controls, and stronger abuse prevention.
-- Develop a mobile-friendly progressive web application for easier access in the field.
-
-## What I Learned
-
-This project provides practical experience in:
-
-- Building a full-stack web application using Next.js, React, and TypeScript.
-- Designing REST-style backend endpoints using Next.js API Routes.
-- Integrating PostgreSQL databases and cloud storage using Supabase.
-- Implementing interactive geospatial visualization with Leaflet.
-- Integrating a multimodal AI API for image analysis and decision support.
-- Designing logic for schedule and location conflict detection.
-- Managing environment variables, API security, and deployment configuration.
-- Testing application workflows and handling failures across multiple services.
-- Using Git and GitHub for collaborative development.
-- Applying technology to a real-world civic problem involving transparency, public infrastructure, and citizen participation.
-
-## Deployment
-
-The application can be deployed on Vercel.
-
-1. Push the project to GitHub.
-2. Import the repository into Vercel.
-3. Configure the required environment variables in the Vercel project settings.
-4. Deploy the application.
-5. Verify the production build, API routes, database connectivity, and AI integrations.
-6. Share the deployment URL for demonstration.
-
-**Live Demo:** Add your deployed Vercel URL here.
-
-**GitHub Repository:** Add your repository URL here.
+- Integrate verified municipal project records and official department data.
+- Add role-based authentication and permissions for citizens, officials, and administrators.
+- Improve clash detection using geographic proximity, project categories, and construction schedules.
+- Add notifications for nearby disruptions, schedule changes, and complaint updates.
+- Introduce project timelines and historical progress tracking.
+- Enhance site verification with a trained computer vision model to classify construction-site conditions.
+- Add audit logs to improve accountability for status changes and official actions.
+- Develop analytics for project delays, repeated excavation, budget utilization, and complaint resolution.
+- Add multilingual support for broader accessibility.
+- Improve accessibility and mobile usability.
+- Evaluate the system using realistic datasets, representative workloads, and documented performance benchmarks.
 
 ---
 
-Built with the goal of making public infrastructure more transparent, coordinated, and accountable through accessible technology.
+**CivicSync — Better coordination. Better communities.**
+
+Making public works more transparent, improving coordination between departments, and giving citizens a meaningful role in infrastructure accountability.
