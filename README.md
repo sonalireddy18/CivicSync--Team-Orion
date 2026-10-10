@@ -9,6 +9,10 @@ Public works such as road resurfacing, drainage construction, underground cable 
 
 CivicSync addresses these challenges by bringing project information, citizen feedback, progress reports, and coordination insights into one accessible platform.
 
+## Video
+
+
+
 ## Features
 
 ### 1. Public Works Discovery and Tracking
