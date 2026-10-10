@@ -91,7 +91,7 @@ export default function Home() {
 
       {/* About */}
       <section id="about" className="bg-slate-900 px-6 py-12 text-center text-white">
-        <h3 className="text-xl font-bold">CivicSync</h3>
+        <h3 className="text-xl font-bold">JanDrishti</h3>
         <p className="mt-2 text-sm text-slate-300">
           Connecting citizens, departments, and communities.
         </p>

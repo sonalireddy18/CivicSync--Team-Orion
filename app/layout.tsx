@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CivicSync",
-  description: "Public works, made transparent.",
+  title: "JanDrishti",
+  description: "Public projects, Public Visibility.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
