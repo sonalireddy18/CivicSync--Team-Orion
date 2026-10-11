@@ -24,8 +24,8 @@ export default function Home() {
         </p>
 
         <h2 className="mx-auto max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-          Public works,
-          <span className="text-emerald-700"> made transparent.</span>
+          Public Projects,
+          <span className="text-emerald-700"> Public Visibility.</span>
         </h2>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
@@ -40,6 +40,7 @@ export default function Home() {
           >
             Explore Public Works →
           </button>
+          
 
           <button
             onClick={() => go("authority")}

@@ -18,7 +18,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-40 flex items-center justify-between border-b bg-white px-4 py-4 md:px-8 md:py-5">
       <Link href="/" className="text-2xl font-bold text-emerald-700">
-        CivicSync
+        JanDrishti
       </Link>
 
       <div className="hidden gap-8 text-sm font-medium md:flex">
