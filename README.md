@@ -1,13 +1,13 @@
-# CivicSync
+# JanDrishti
 ### Improving Transparency and Coordination in Public Works Projects
 
 ## Overview
 
-CivicSync is a civic technology platform designed to improve transparency, accountability, and coordination in public infrastructure projects. It connects citizens and municipal authorities through a centralized platform where residents can discover public works in their neighbourhood, track construction progress, report issues, and verify on-site activity.
+JanDrishti is a civic technology platform designed to improve transparency, accountability, and coordination in public infrastructure projects. It connects citizens and municipal authorities through a centralized platform where residents can discover public works in their neighbourhood, track construction progress, report issues, and verify on-site activity.
 
 Public works such as road resurfacing, drainage construction, underground cable installation, and pipeline replacement are often managed by different departments with limited coordination. This can result in repeated road excavation, construction delays, traffic disruptions, and a lack of public accountability.
 
-CivicSync addresses these challenges by bringing project information, citizen feedback, progress reports, and coordination insights into one accessible platform.
+JanDrishti addresses these challenges by bringing project information, citizen feedback, progress reports, and coordination insights into one accessible platform.
 
 ## Video
 
@@ -80,10 +80,10 @@ https://drive.google.com/drive/folders/1YeAJCUOmSVNbsE-G4WbIe5_DQpSmC1Bt?usp=sha
 
 ## Architecture / How It Works
 
-CivicSync follows a full-stack web architecture in which the Next.js application handles the user interface, navigation, and server-side API operations.
+JanDrishti follows a full-stack web architecture in which the Next.js application handles the user interface, navigation, and server-side API operations.
 
 ```text
-                    CivicSync
+                    JanDrishti
                         |
           +-------------+-------------+
           |                           |
@@ -216,7 +216,7 @@ civic/
 
 ```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd civicsync
+cd JanDrishti
 ```
 
 Replace the repository URL with the actual GitHub URL.
@@ -263,7 +263,7 @@ Run the build command to check whether the application compiles successfully bef
 
 ### For Citizens
 
-1. Open CivicSync and navigate to the public works section.
+1. Open JanDrishti and navigate to the public works section.
 2. Explore projects using the interactive map or project listings.
 3. Search for nearby projects and filter them by status or department.
 4. Review project schedules, contractors, budgets, and reported disruptions.
@@ -286,7 +286,7 @@ Consider a road in Chennai where drainage construction and water-main replacemen
 
 Without a shared coordination platform, one department might restore the road after completing its work, only for another department to excavate the same road shortly afterward.
 
-With CivicSync:
+With JanDrishti:
 
 1. Both public works projects are registered with their respective departments, locations, and schedules.
 2. The coordination engine identifies a potential overlap between the projects.
@@ -325,7 +325,7 @@ Citizen-submitted reports provide an additional source of information about on-s
 ### Fragmented Public Works Information
 **Challenge:** Project details are often spread across departments, making it difficult to understand the full scope of construction in a neighborhood.
 
-**Solution:** CivicSync presents project information through a centralized listing and interactive map.
+**Solution:** JanDrishti presents project information through a centralized listing and interactive map.
 
 ### Overlapping Construction Schedules
 **Challenge:** Different departments may schedule work on the same street during overlapping periods.
@@ -389,6 +389,6 @@ Actual performance results should be measured and documented after running the t
 
 ---
 
-**CivicSync — Better coordination. Better communities.**
+**JanDrishti — Better coordination. Better communities.**
 
 Making public works more transparent, improving coordination between departments, and giving citizens a meaningful role in infrastructure accountability.
